@@ -1,0 +1,70 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+  Mostrar
+{% endblock %}
+
+{% block body %}
+  <div class="container p-4 rounded" style="background-color: #f0f8ff;"> {# Fondo claro azulado #}
+
+    <div class="row mb-4">
+      <div class="col d-flex align-items-center">
+        <h1 class="text-primary fw-bold">Listado de Estudiantes</h1>
+        <a href="{{ path('crud_add') }}" class="btn btn-success ms-auto shadow-sm">
+          <i class="bi bi-plus-circle me-2"></i> Agregar
+        </a>
+      </div>
+    </div>
+
+    <div class="card shadow-sm border-0">
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-bordered table-hover mb-0">
+            <thead class="table-primary text-center align-middle">
+              <tr>
+                <th>#</th>
+                <th>Identidad</th>
+                <th>Nombre</th>
+                <th>Salón</th>
+                <th>Acudiente</th>
+                <th>Edad</th>
+                <th>Género</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% if users|length > 0 %}
+                {% for item in users %}
+                  <tr class="align-middle text-center">
+                    <td>{{ item.id }}</td>
+                    <td>{{ item.identidad }}</td>
+                    <td>{{ item.nombre }}</td>
+                    <td>{{ item.salon }}</td>
+                    <td>{{ item.acudiente }}</td>
+                    <td>{{ item.edad }}</td>
+                    <td>{{ item.genero }}</td>
+                    <td>
+                      <a href="{{ path('crud_update', { id: item.id }) }}" class="btn btn-warning btn-sm me-1 shadow-sm" title="Editar">
+                        <i class="bi bi-pencil-square"></i>
+                      </a>
+                      <a href="javascript:void(0)" class="btn btn-danger btn-sm shadow-sm"
+                         onclick="confirmarSweet('¿Estás seguro de eliminar el registro?', '{{ path('crud_delete', { id: item.id }) }}')"
+                         title="Eliminar">
+                        <i class="bi bi-trash"></i>
+                      </a>
+                    </td>
+                  </tr>
+                {% endfor %}
+              {% else %}
+                <tr>
+                  <td colspan="8" class="text-center text-muted fw-semibold">No hay registros disponibles</td>
+                </tr>
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+{% endblock %}
