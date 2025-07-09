@@ -16,8 +16,8 @@ class Estudiante
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 10)]
-    private ?string $identidad = null;
+    #[ORM\Column]
+    private ?int $identidad = null;
 
     #[ORM\Column(length: 100)]
     private ?string $nombre = null;
@@ -39,12 +39,12 @@ class Estudiante
         return $this->id;
     }
 
-    public function getIdentidad(): ?string
+    public function getIdentidad(): ?int
     {
         return $this->identidad;
     }
 
-    public function setIdentidad(string $identidad): static
+    public function setIdentidad(int $identidad): static
     {
         $this->identidad = $identidad;
         return $this;
@@ -108,37 +108,11 @@ class Estudiante
     public static function loadValidatorMetadata(ClassMetadata $metadata): void
     {
         $metadata->addPropertyConstraint('identidad', new Assert\NotBlank(['message' => 'Este campo no puede estar vacío']));
-        $metadata->addPropertyConstraint('identidad', new Assert\Length([
-            'min' => 10,
-            'max' => 10,
-            'exactMessage' => 'La cédula debe tener exactamente 10 dígitos',
-        ]));
-        $metadata->addPropertyConstraint('identidad', new Assert\Regex([
-            'pattern' => '/^\d+$/',
-            'message' => 'La cédula solo debe contener números',
-        ]));
-
         $metadata->addPropertyConstraint('nombre', new Assert\NotBlank(['message' => 'Este campo no puede estar vacío']));
-        $metadata->addPropertyConstraint('nombre', new Assert\Regex([
-            'pattern' => '/^[\p{L} ]+$/u',
-            'message' => 'El nombre solo debe contener letras y espacios',
-        ]));
-
         $metadata->addPropertyConstraint('salon', new Assert\NotBlank(['message' => 'Este campo no puede estar vacío']));
-
         $metadata->addPropertyConstraint('acudiente', new Assert\NotBlank(['message' => 'Este campo no puede estar vacío']));
-        $metadata->addPropertyConstraint('acudiente', new Assert\Regex([
-            'pattern' => '/^[\p{L} ]+$/u',
-            'message' => 'El nombre del acudiente solo debe contener letras y espacios',
-        ]));
-
         $metadata->addPropertyConstraint('edad', new Assert\NotBlank(['message' => 'Este campo no puede estar vacío']));
         $metadata->addPropertyConstraint('edad', new Assert\Positive(['message' => 'La edad debe ser un número positivo']));
-
         $metadata->addPropertyConstraint('genero', new Assert\NotBlank(['message' => 'Este campo no puede estar vacío']));
-        $metadata->addPropertyConstraint('genero', new Assert\Regex([
-            'pattern' => '/^[\p{L} ]+$/u',
-            'message' => 'El género solo debe contener letras',
-        ]));
     }
 }
