@@ -1,125 +1,144 @@
 <?php
 
-namespace App\Controller;
+namespace App\Entity;
 
-use App\Entity\Estudiante;
-use App\Entity\User;
-use App\Form\EstudianteFormType;
-use App\Form\UserFormType;
-use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Attribute\Route;
+use App\Repository\EstudianteRepository;
+use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Mapping\ClassMetadata;
 
-class EstudianteController extends AbstractController
+#[ORM\Entity(repositoryClass: EstudianteRepository::class)]
+#[ORM\Table(name: '`Estudiante`')]
+class Estudiante
 {
-    private $em;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
 
-    public function __construct(EntityManagerInterface $em)
+    #[ORM\Column(length: 10)]
+    private ?string $identidad = null;
+
+    #[ORM\Column(length: 100)]
+    private ?string $nombre = null;
+
+    #[ORM\Column(length: 50)]
+    private ?string $salon = null;
+
+    #[ORM\Column(length: 100)]
+    private ?string $acudiente = null;
+
+    #[ORM\Column]
+    private ?int $edad = null;
+
+    #[ORM\Column(length: 20)]
+    private ?string $genero = null;
+
+    public function getId(): ?int
     {
-        $this->em = $em;
+        return $this->id;
     }
 
-    // Mostrar registros
-    #[Route('/', name: 'crud_show')]
-    public function show(): Response
+    public function getIdentidad(): ?string
     {
-        $users = $this->em->getRepository(Estudiante::class)->findAll();
-
-        return $this->render('home/show.html.twig', [
-            'users' => $users,
-        ]);
+        return $this->identidad;
     }
 
-    // Agregar registro
-    #[Route('/crud/add', name: 'crud_add')]
-    public function add(Request $request): Response
+    public function setIdentidad(string $identidad): static
     {
-        $user = new Estudiante();
-        $form = $this->createForm(EstudianteFormType::class, $user, [
-            'is_edit' => false,
-        ]);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            try {
-                $campos = $form->getData();
-
-                $user->setIdentidad($campos->getIdentidad());
-                $user->setNombre($campos->getNombre());
-                $user->setSalon($campos->getSalon());
-                $user->setAcudiente($campos->getAcudiente());
-                $user->setEdad($campos->getEdad());
-                $user->setGenero($campos->getGenero());
-
-                $this->em->persist($user);
-                $this->em->flush();
-
-                flash()->success('Estudiante registrado correctamente.');
-                return $this->redirectToRoute('crud_show');
-            } catch (\Exception $e) {
-                flash()->error('Ocurrió un error al guardar el estudiante.');
-                return $this->redirectToRoute('crud_add');
-            }
-        }
-
-        return $this->render('home/add.html.twig', [
-            'form' => $form->createView(),
-        ]);
+        $this->identidad = $identidad;
+        return $this;
     }
 
-    // Actualizar registro
-    #[Route('/crud/update/{id}', name: 'crud_update')]
-    public function update(int $id, Request $request): Response
+    public function getNombre(): ?string
     {
-        $user = $this->em->getRepository(Estudiante::class)->find($id);
-
-        if (!$user) {
-            throw $this->createNotFoundException(
-                'No se encontró el registro con el id: ' . $id
-            );
-        }
-
-        $form = $this->createForm(EstudianteFormType::class, $user, [
-            'is_edit' => true,
-        ]);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            try {
-                $this->em->flush();
-
-                flash()->success('Estudiante actualizado correctamente.');
-                return $this->redirectToRoute('crud_show');
-            } catch (\Exception $e) {
-                flash()->error('Ocurrió un error al actualizar el estudiante.');
-                return $this->redirectToRoute('crud_update', ['id' => $id]);
-            }
-        }
-
-        return $this->render('home/update.html.twig', [
-            'form' => $form->createView(),
-            'user' => $user,
-        ]);
+        return $this->nombre;
     }
 
-    // Eliminar registro
-    #[Route('/crud/delete/{id}', name: 'crud_delete')]
-    public function delete(int $id): Response
+    public function setNombre(string $nombre): static
     {
-        $user = $this->em->getRepository(Estudiante::class)->find($id);
+        $this->nombre = $nombre;
+        return $this;
+    }
 
-        if (!$user) {
-            throw $this->createNotFoundException(
-                'No se encontró el registro con el id: ' . $id
-            );
-        }
+    public function getSalon(): ?string
+    {
+        return $this->salon;
+    }
 
-        $this->em->remove($user);
-        $this->em->flush();
+    public function setSalon(string $salon): static
+    {
+        $this->salon = $salon;
+        return $this;
+    }
 
-        flash()->success('Estudiante eliminado correctamente.');
-        return $this->redirectToRoute('crud_show');
+    public function getAcudiente(): ?string
+    {
+        return $this->acudiente;
+    }
+
+    public function setAcudiente(string $acudiente): static
+    {
+        $this->acudiente = $acudiente;
+        return $this;
+    }
+
+    public function getEdad(): ?int
+    {
+        return $this->edad;
+    }
+
+    public function setEdad(int $edad): static
+    {
+        $this->edad = $edad;
+        return $this;
+    }
+
+    public function getGenero(): ?string
+    {
+        return $this->genero;
+    }
+
+    public function setGenero(string $genero): static
+    {
+        $this->genero = $genero;
+        return $this;
+    }
+
+    public static function loadValidatorMetadata(ClassMetadata $metadata): void
+    {
+        $metadata->addPropertyConstraint('identidad', new Assert\NotBlank(['message' => 'Este campo no puede estar vacío']));
+        $metadata->addPropertyConstraint('identidad', new Assert\Length([
+            'min' => 10,
+            'max' => 10,
+            'exactMessage' => 'La cédula debe tener exactamente 10 dígitos',
+        ]));
+        $metadata->addPropertyConstraint('identidad', new Assert\Regex([
+            'pattern' => '/^\d+$/',
+            'message' => 'La cédula solo debe contener números',
+        ]));
+
+        $metadata->addPropertyConstraint('nombre', new Assert\NotBlank(['message' => 'Este campo no puede estar vacío']));
+        $metadata->addPropertyConstraint('nombre', new Assert\Regex([
+            'pattern' => '/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/',
+            'message' => 'El nombre solo debe contener letras',
+        ]));
+
+        $metadata->addPropertyConstraint('salon', new Assert\NotBlank(['message' => 'Este campo no puede estar vacío']));
+
+        $metadata->addPropertyConstraint('acudiente', new Assert\NotBlank(['message' => 'Este campo no puede estar vacío']));
+        $metadata->addPropertyConstraint('acudiente', new Assert\Regex([
+            'pattern' => '/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/',
+            'message' => 'El nombre del acudiente solo debe contener letras',
+        ]));
+
+        $metadata->addPropertyConstraint('edad', new Assert\NotBlank(['message' => 'Este campo no puede estar vacío']));
+        $metadata->addPropertyConstraint('edad', new Assert\Positive(['message' => 'La edad debe ser un número positivo']));
+
+        $metadata->addPropertyConstraint('genero', new Assert\NotBlank(['message' => 'Este campo no puede estar vacío']));
+        $metadata->addPropertyConstraint('genero', new Assert\Regex([
+            'pattern' => '/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/',
+            'message' => 'El género solo debe contener letras',
+        ]));
     }
 }
