@@ -26,14 +26,18 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # 4. Establecer directorio de trabajo
 WORKDIR /var/www/html
 
-# 5. Copiar archivos del proyecto
-COPY . .
+# 5. Copiar solo los archivos necesarios para instalar dependencias
+COPY composer.json composer.lock ./
 
 # 6. Instalar dependencias de Symfony
-RUN composer install --no-dev --optimize-autoloader
+# 🔴 Nota: por ahora sin --no-dev para ver errores claros
+RUN composer install || cat var/log/dev.log || cat /var/www/html/var/log/dev.log || true
 
-# 7. Permisos para carpeta var (Symfony)
+# 7. Copiar el resto del proyecto
+COPY . .
+
+# 8. Permisos para carpeta var
 RUN chown -R www-data:www-data var && chmod -R 775 var
 
-# 8. Exponer puerto 80
+# 9. Exponer puerto
 EXPOSE 80
