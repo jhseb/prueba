@@ -43,7 +43,7 @@ class EstudianteController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            
+            try {
                 $campos = $form->getData();
 
                 $user->setIdentidad($campos->getIdentidad());
@@ -58,7 +58,10 @@ class EstudianteController extends AbstractController
 
                 flash()->success('Estudiante registrado correctamente.');
                 return $this->redirectToRoute('crud_show');
-            
+            } catch (\Exception $e) {
+                flash()->error('Ocurrió un error al guardar el estudiante.');
+                return $this->redirectToRoute('crud_add');
+            }
         }
 
         return $this->render('home/add.html.twig', [
