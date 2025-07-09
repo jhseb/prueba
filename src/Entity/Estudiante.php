@@ -119,6 +119,10 @@ class Estudiante
         ]));
 
         $metadata->addPropertyConstraint('nombre', new Assert\NotBlank(['message' => 'Este campo no puede estar vacío']));
+        $metadata->addPropertyConstraint('nombre', new Assert\Regex([
+            'pattern' => '/^[\p{L} ]+$/u',
+            'message' => 'El nombre solo debe contener letras y espacios',
+        ]));
 
         $metadata->addPropertyConstraint('salon', new Assert\NotBlank(['message' => 'Este campo no puede estar vacío']));
 
